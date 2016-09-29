@@ -73,6 +73,8 @@ type Syncer struct {
 
 	ctx    context.Context
 	cancel context.CancelFunc
+
+	onWaitJob bool
 }
 
 // NewSyncer creates a new Syncer.
@@ -369,10 +371,10 @@ func (s *Syncer) addJob(job *job) error {
 	idx := int(genHashKey(job.key)) % s.cfg.WorkerCount
 	s.jobs[idx] <- job
 
-	wait := s.checkWait(job)
-	if wait {
+	s.onWaitJob = s.checkWait(job)
+	if s.onWaitJob {
 		s.jobWg.Wait()
-
+		s.onWaitJob = false
 		err := s.meta.Save(job.pos)
 		if err != nil {
 			return errors.Trace(err)
@@ -683,6 +685,11 @@ func (s *Syncer) Close() {
 	defer s.Unlock()
 
 	if s.isClosed() {
+		return
+	}
+
+	if s.onWaitJob {
+		log.Warn("Now there is a ddl job is running,so do not interrupt syncer.please wait the job finish or use kill SIGKILL to force exit.")
 		return
 	}
 

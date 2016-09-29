@@ -55,16 +55,19 @@ func main() {
 	syncer := NewSyncer(cfg)
 
 	sc := make(chan os.Signal, 1)
-	signal.Notify(sc,
-		syscall.SIGHUP,
-		syscall.SIGINT,
-		syscall.SIGTERM,
-		syscall.SIGQUIT)
 
 	go func() {
-		sig := <-sc
-		log.Infof("Got signal [%d] to exit.", sig)
-		syncer.Close()
+		for {
+			signal.Notify(sc,
+				syscall.SIGHUP,
+				syscall.SIGINT,
+				syscall.SIGTERM,
+				syscall.SIGQUIT)
+
+			sig := <-sc
+			log.Infof("Got signal [%d] to exit.", sig)
+			syncer.Close()
+		}
 	}()
 
 	go func() {
