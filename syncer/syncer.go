@@ -24,7 +24,6 @@ import (
 
 	"github.com/juju/errors"
 	"github.com/ngaut/log"
-	"github.com/siddontang/go-mysql/mysql"
 	"github.com/siddontang/go-mysql/replication"
 	"github.com/siddontang/go/sync2"
 )
@@ -45,8 +44,7 @@ type Syncer struct {
 
 	cfg *Config
 
-	meta    Meta
-	realPos mysql.Position
+	meta Meta
 
 	syncer *replication.BinlogSyncer
 
@@ -354,7 +352,7 @@ func (s *Syncer) addCount(tp opType) {
 }
 
 func (s *Syncer) checkWait(job *job) bool {
-	if job.tp == ddl {
+	if job.tp == ddl || job.tp == xid {
 		return true
 	}
 
@@ -366,15 +364,12 @@ func (s *Syncer) checkWait(job *job) bool {
 }
 
 func (s *Syncer) addJob(job *job) error {
-	if job.tp == xid {
-		s.realPos = job.pos
-		return nil
+	if job.tp != xid {
+		s.jobWg.Add(1)
+
+		idx := int(genHashKey(job.key)) % s.cfg.WorkerCount
+		s.jobs[idx] <- job
 	}
-
-	s.jobWg.Add(1)
-
-	idx := int(genHashKey(job.key)) % s.cfg.WorkerCount
-	s.jobs[idx] <- job
 
 	wait := s.checkWait(job)
 	if wait {
@@ -673,8 +668,8 @@ func (s *Syncer) printStatus() {
 				totalTps = total / totalSeconds
 			}
 
-			log.Infof("[syncer]total events = %d, insert = %d, update = %d, delete = %d, total tps = %d, recent tps = %d, %s, binlog real pos = %d.",
-				total, s.insertCount.Get(), s.updateCount.Get(), s.deleteCount.Get(), totalTps, tps, s.meta, s.realPos.Pos)
+			log.Infof("[syncer]total events = %d, insert = %d, update = %d, delete = %d, total tps = %d, recent tps = %d, %s.",
+				total, s.insertCount.Get(), s.updateCount.Get(), s.deleteCount.Get(), totalTps, tps, s.meta)
 
 			s.lastCount.Set(total)
 			s.lastTime = time.Now()
