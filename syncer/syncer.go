@@ -352,7 +352,7 @@ func (s *Syncer) addCount(tp opType) {
 }
 
 func (s *Syncer) checkWait(job *job) bool {
-	if job.tp == ddl || job.tp == xid {
+	if job.tp == ddl {
 		return true
 	}
 
@@ -364,7 +364,10 @@ func (s *Syncer) checkWait(job *job) bool {
 }
 
 func (s *Syncer) addJob(job *job) error {
-	if job.tp != xid {
+	if job.tp == xid {
+		s.meta.Save(job.pos, false)
+		return nil
+	} else {
 		s.jobWg.Add(1)
 
 		idx := int(genHashKey(job.key)) % s.cfg.WorkerCount
@@ -375,7 +378,7 @@ func (s *Syncer) addJob(job *job) error {
 	if wait {
 		s.jobWg.Wait()
 
-		err := s.meta.Save(job.pos)
+		err := s.meta.Save(job.pos, true)
 		if err != nil {
 			return errors.Trace(err)
 		}
@@ -543,7 +546,7 @@ func (s *Syncer) run() error {
 			pos.Name = string(ev.NextLogName)
 			pos.Pos = uint32(ev.Position)
 
-			err = s.meta.Save(pos)
+			err = s.meta.Save(pos, true)
 			if err != nil {
 				return errors.Trace(err)
 			}
