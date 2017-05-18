@@ -21,7 +21,7 @@ import (
 	"syscall"
 
 	"github.com/juju/errors"
-	"github.com/ngaut/log"
+	"github.com/pingcap/tidb-tools/pkg/log"
 )
 
 func main() {
@@ -37,17 +37,7 @@ func main() {
 	}
 
 	log.SetLevelByString(cfg.LogLevel)
-
-	if len(cfg.LogFile) > 0 {
-		log.SetOutputByName(cfg.LogFile)
-		log.SetHighlighting(false)
-
-		if cfg.LogRotate == "hour" {
-			log.SetRotateByHour()
-		} else {
-			log.SetRotateByDay()
-		}
-	}
+	log.InitLogger(cfg.LogFile, cfg.LogFormat)
 
 	log.Infof("config: %s", cfg)
 

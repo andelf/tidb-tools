@@ -20,7 +20,7 @@ import (
 	_ "net/http/pprof"
 	"strconv"
 
-	"github.com/ngaut/log"
+	"github.com/pingcap/tidb-tools/pkg/log"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/siddontang/go-mysql/mysql"
 )

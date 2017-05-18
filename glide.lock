@@ -1,5 +1,5 @@
 hash: 3c3dbe26161da24a6b2c4ae97f5c376a25a1bd95904b8a14229bf21db826ffaf
-updated: 2017-05-17T17:48:26.386605122+08:00
+updated: 2017-05-18T15:15:10.381704129+08:00
 imports:
 - name: github.com/beorn7/perks
   version: 3ac7bf7a47d159a033b107610db8a1b6575507a4
@@ -125,6 +125,8 @@ imports:
   - mysql
   - packet
   - replication
+- name: github.com/Sirupsen/logrus
+  version: ba1b36c82c5e05c4f912a88eab0dcd91a171688f
 - name: github.com/twinj/uuid
   version: 70cac2bcd273ef6a371bb96cde363d28b68734c3
 - name: golang.org/x/net
@@ -136,6 +138,10 @@ imports:
   - internal/timeseries
   - lex/httplex
   - trace
+- name: golang.org/x/sys
+  version: a646d33e2ee3172a661fc09bca23bb4889a41bc8
+  subpackages:
+  - unix
 - name: golang.org/x/text
   version: 723492b65e225eafcba054e76ba18bb9c5ac1ea2
   subpackages:
@@ -160,4 +166,6 @@ imports:
   - naming
   - peer
   - transport
+- name: gopkg.in/natefinch/lumberjack.v2
+  version: dd45e6a67c53f673bb49ca8a001fd3a63ceb640e
 testImports: []

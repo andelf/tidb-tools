@@ -26,7 +26,7 @@ import (
 
 	"github.com/go-sql-driver/mysql"
 	"github.com/juju/errors"
-	"github.com/ngaut/log"
+	"github.com/pingcap/tidb-tools/pkg/log"
 	"github.com/pingcap/tidb/ast"
 	tddl "github.com/pingcap/tidb/ddl"
 	"github.com/pingcap/tidb/infoschema"

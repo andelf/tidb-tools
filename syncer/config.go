@@ -37,7 +37,7 @@ func NewConfig() *Config {
 	fs.StringVar(&cfg.Meta, "meta", "syncer.meta", "syncer meta info")
 	fs.StringVar(&cfg.LogLevel, "L", "info", "log level: debug, info, warn, error, fatal")
 	fs.StringVar(&cfg.LogFile, "log-file", "", "log file path")
-	fs.StringVar(&cfg.LogRotate, "log-rotate", "day", "log file rotate type, hour/day")
+	fs.StringVar(&cfg.LogFormat, "log-format", "text", "log file output format: text, json, console")
 	fs.BoolVar(&cfg.EnableGTID, "enable-gtid", false, "enable gtid mode")
 	fs.BoolVar(&cfg.AutoFixGTID, "auto-fix-gtid", false, "auto fix gtid while switch mysql master/slave")
 
@@ -69,7 +69,7 @@ type Config struct {
 
 	LogLevel  string `toml:"log-level" json:"log-level"`
 	LogFile   string `toml:"log-file" json:"log-file"`
-	LogRotate string `toml:"log-rotate" json:"log-rotate"`
+	LogFormat string `toml:"log-format" json:"log-format"`
 
 	StatusAddr string `toml:"status-addr" json:"status-addr"`
 
@@ -153,11 +153,11 @@ func (c *Config) adjust() {
 }
 
 func (c Config) String() string {
-	return fmt.Sprintf(`log-level:%s log-file:%s log-rotate:%s status-addr:%s `+
+	return fmt.Sprintf(`log-level:%s log-file:%s log-format:%s status-addr:%s `+
 		`server-id:%d worker-count:%d batch:%d meta-file:%s `+
 		`do-tables:%v do-dbs:%v ignore-tables:%v ignore-dbs:%v `+
 		`from:%s to:%s skip-sqls %v`,
-		c.LogLevel, c.LogFile, c.LogRotate, c.StatusAddr,
+		c.LogLevel, c.LogFile, c.LogFormat, c.StatusAddr,
 		c.ServerID, c.WorkerCount, c.Batch, c.Meta,
 		c.DoTables, c.DoDBs, c.IgnoreTables, c.IgnoreDBs,
 		c.From, c.To, c.SkipSQLs)

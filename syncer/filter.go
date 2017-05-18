@@ -4,7 +4,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/ngaut/log"
+	"github.com/pingcap/tidb-tools/pkg/log"
 )
 
 var (
